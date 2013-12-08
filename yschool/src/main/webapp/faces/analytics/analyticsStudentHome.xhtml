@@ -33,6 +33,21 @@
 </div>
 
 
+<div class="span3">
+    <!--Examination search bar with filter-->
+    <form class="navbar-search pull-left">
+        <input type="text" class="search-query" placeholder="Search"> </input>
+    </form>
+</div>
+
+<div class="span3">
+    <!--Add new student Button-->
+    <a href="/yschool/faces/analytics/analyticsStudentRecommenderHome.xhtml">
+        <Button class="btn btn-info btn-large">Recommendations</Button>
+    </a>
+</div>
+
+
 <div class="span9">
 
     <div id="init-form" class="tabbable">
@@ -71,7 +86,7 @@
 
                                         <p:lineChart seriesColors="008000,FF8C00,ff0000"
                                                      value="#{classroomSubject.linearModelTermMarks}"
-                                                     legendPosition="s" zoom="true" animate="true"
+                                                     legendPosition="sw" zoom="true" animate="true"
                                                      title="Term marks and Predictions" minY="0" maxY="100"
                                                      style="width:400px;height:300px"/>
 

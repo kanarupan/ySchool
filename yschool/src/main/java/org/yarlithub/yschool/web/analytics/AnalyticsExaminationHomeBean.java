@@ -16,6 +16,7 @@ import org.yarlithub.yschool.web.examination.ExaminationController;
 
 import javax.faces.bean.ManagedBean;
 import java.io.Serializable;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -47,11 +48,65 @@ public class AnalyticsExaminationHomeBean implements Serializable {
     private String termString;
     private int[] generalIntArray;
     private int[] termIntArray;
-    private double seqAlignScore;
+    private double seqScore;
     private double jacScore;
+    private String jacMsg = "No results available";
     private List<Integer> termIntegerArrayList;
     private List<Integer> generalIntegerArrayList;
     private CartesianChartModel indivSim;
+    private String seqMsg = "No results available";
+    private String overallMsg = "No results available";
+    private boolean neg = false;
+    private boolean pos = false;
+    private boolean avg = false;
+
+    public boolean isNeg() {
+        return neg;
+    }
+
+    public void setNeg(boolean neg) {
+        this.neg = neg;
+    }
+
+    public boolean isAvg() {
+        return avg;
+    }
+
+    public void setAvg(boolean avg) {
+        this.avg = avg;
+    }
+
+    public boolean isPos() {
+        return pos;
+    }
+
+    public void setPos(boolean pos) {
+        this.pos = pos;
+    }
+
+    public String getOverallMsg() {
+        return overallMsg;
+    }
+
+    public void setOverallMsg(String overallMsg) {
+        this.overallMsg = overallMsg;
+    }
+
+    public String getJacMsg() {
+        return jacMsg;
+    }
+
+    public void setJacMsg(String jacMsg) {
+        this.jacMsg = jacMsg;
+    }
+
+    public String getSeqMsg() {
+        return seqMsg;
+    }
+
+    public void setSeqMsg(String seqMsg) {
+        this.seqMsg = seqMsg;
+    }
 
     public List<Integer> getTermIntegerArrayList() {
         return termIntegerArrayList;
@@ -136,12 +191,12 @@ public class AnalyticsExaminationHomeBean implements Serializable {
         this.termIntArray = termIntArray;
     }
 
-    public double getSeqAlignScore() {
-        return seqAlignScore;
+    public double getSeqScore() {
+        return seqScore;
     }
 
-    public void setSeqAlignScore(double seqAlignScore) {
-        this.seqAlignScore = seqAlignScore;
+    public void setSeqScore(double seqScore) {
+        this.seqScore = seqScore;
     }
 
     public double getJacScore() {
@@ -228,7 +283,7 @@ public class AnalyticsExaminationHomeBean implements Serializable {
         while (generalIterator.hasNext()) {
             i++;
             int k = generalIterator.next();
-            if (i % 5== 0) {
+            if (i % 5 == 0) {
                 generalGrade.set(i, k);
             }
 
@@ -309,9 +364,46 @@ public class AnalyticsExaminationHomeBean implements Serializable {
         generalIntArray = examStandard.getGeneralCount();
         termIntArray = examStandard.getTermCount();
         jacScore = examStandard.getJaccardIndex();
-        seqAlignScore = examStandard.getSequenceAlignmentScore();
+        seqScore = examStandard.getSequenceAlignmentScore();
+        neg = false;
+        pos = false;
+        avg = false;
+
+        if (jacScore > 75) {
+            this.jacMsg = MessageStudentHome.jac_msg_pos;
+        } else if (jacScore > 50) {
+            this.jacMsg = MessageStudentHome.jac_msg_avf;
+        } else if (jacScore <= 50) {
+            this.jacMsg = MessageStudentHome.jac_msg_neg;
+        }
 
 
+        if (seqScore > 75) {
+            this.seqMsg = MessageStudentHome.seq_msg_pos;
+        } else if (seqScore > 50) {
+            this.seqMsg = MessageStudentHome.seq_msg_avf;
+        } else if (seqScore <= 50) {
+            this.seqMsg = MessageStudentHome.seq_msg_neg;
+        }
+
+
+        if (seqScore < +50 && jacScore < +50) {
+            overallMsg = MessageStudentHome.ovr_msg_neg;
+            neg = true;
+        } else if (seqScore > 75 && jacScore > 75) {
+            overallMsg = MessageStudentHome.ovr_msg_pos;
+            pos = true;
+        } else {
+            overallMsg = MessageStudentHome.ovr_msg_avg;
+            avg = true;
+        }
+
+
+        NumberFormat nf = NumberFormat.getInstance();
+        nf.setMaximumFractionDigits(2);
+        nf.setGroupingUsed(false);
+        jacScore = Double.valueOf(nf.format(jacScore));
+        seqScore = Double.valueOf(nf.format(seqScore));
         char[] termCharArray = termString.toCharArray();
         char[] generalCharArray = generalString.toCharArray();
 
